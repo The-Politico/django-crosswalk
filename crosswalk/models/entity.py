@@ -1,40 +1,20 @@
 import uuid
 
+from crosswalk.models import Domain
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
 from django.db import models
-from uuslug import uuslug
-
-
-class Domain(models.Model):
-    slug = models.SlugField(
-        blank=True, max_length=250, unique=True, editable=False)
-
-    name = models.CharField(max_length=250, unique=True)
-
-    parent = models.ForeignKey(
-        'self', null=True, blank=True, related_name='children')
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = uuslug(
-                self.name,
-                instance=self,
-                max_length=250,
-                separator='-',
-                start_no=2
-            )
-        super(Domain, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
 
 
 class Entity(models.Model):
     uuid = models.UUIDField(
         default=uuid.uuid4, editable=False, primary_key=True)
 
-    domain = models.ForeignKey(Domain, related_name='entities')
+    domain = models.ForeignKey(
+        Domain,
+        related_name='entities',
+        on_delete=models.PROTECT,
+    )
 
     attributes = JSONField()
 
@@ -43,6 +23,7 @@ class Entity(models.Model):
         null=True,
         blank=True,
         related_name='aliases',
+        on_delete=models.PROTECT,
         help_text=(
             "An entity in the same domain whose UUID should supersede",
             "this one."
@@ -54,6 +35,7 @@ class Entity(models.Model):
         null=True,
         blank=True,
         related_name='supersedes',
+        on_delete=models.PROTECT,
         help_text=(
             "An entity in another domain whose UUID should supersede",
             "this one."
@@ -62,7 +44,12 @@ class Entity(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(User, related_name="+")
+    created_by = models.ForeignKey(
+        User,
+        related_name="+",
+        null=True,
+        on_delete=models.SET_NULL
+    )
 
     @property
     def is_alias(self):
@@ -73,4 +60,4 @@ class Entity(models.Model):
         return bool(self.superseded_by)
 
     def __str__(self):
-        return self.uuid
+        return self.uuid.hex
