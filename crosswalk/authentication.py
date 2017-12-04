@@ -1,5 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import authentication, exceptions
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
 from .models import ApiUser
 
@@ -17,3 +19,8 @@ class TokenAuthentication(authentication.BaseAuthentication):
         except ObjectDoesNotExist:
             raise exceptions.AuthenticationFailed('Unauthorized')
         return (user, None)
+
+
+class AuthenticatedView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)

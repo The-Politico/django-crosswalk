@@ -1,4 +1,4 @@
-from crosswalk.models import ApiUser
+from crosswalk.models import ApiUser, Domain, Entity
 from django.contrib import admin
 
 
@@ -8,3 +8,5 @@ class ApiUserAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ApiUser, ApiUserAdmin)
+admin.site.register(Entity)
+admin.site.register(Domain)
