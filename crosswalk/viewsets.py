@@ -13,7 +13,7 @@ class DomainViewSet(viewsets.ModelViewSet):
 
 class EntityViewSet(viewsets.ModelViewSet):
     serializer_class = EntitySerializer
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
     def get_queryset(self):
-        return Entity.objects.all()
+        domain = self.kwargs['domain']
+        return Entity.objects.filter(domain__name=domain)

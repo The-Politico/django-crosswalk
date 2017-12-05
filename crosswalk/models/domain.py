@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from uuslug import uuslug
 
@@ -14,6 +15,15 @@ class Domain(models.Model):
         blank=True,
         related_name='children',
         on_delete=models.PROTECT
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(
+        User,
+        related_name="+",
+        null=True,
+        on_delete=models.SET_NULL
     )
 
     def save(self, *args, **kwargs):
