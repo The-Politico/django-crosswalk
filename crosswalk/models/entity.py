@@ -5,7 +5,8 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from crosswalk.models import Domain
-from crosswalk.validators import validate_shallow_dict
+from crosswalk.validators import (validate_no_reserved_keys,
+                                  validate_shallow_dict)
 
 
 class Entity(models.Model):
@@ -18,7 +19,10 @@ class Entity(models.Model):
         on_delete=models.PROTECT,
     )
 
-    attributes = JSONField(validators=[validate_shallow_dict])
+    attributes = JSONField(validators=[
+        validate_shallow_dict,
+        validate_no_reserved_keys
+    ])
 
     alias_for = models.ForeignKey(
         'self',

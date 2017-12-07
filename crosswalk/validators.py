@@ -1,6 +1,4 @@
-from django.core.exceptions import ValidationError
-
-reserved_keys = ['entity', 'created', 'match_score']
+from crosswalk.exceptions import NestedAttributesError, ReservedKeyError
 
 
 def validate_shallow_dict(value):
@@ -8,6 +6,17 @@ def validate_shallow_dict(value):
     if isinstance(value, dict):
         for key in value:
             if isinstance(value[key], dict):
-                raise ValidationError("Nested attributes are not allowed.")
+                raise NestedAttributesError(
+                    "Nested attributes are not allowed."
+                )
+
+
+def validate_no_reserved_keys(value):
+    reserved_keys = ['entity', 'created', 'match_score']
+
+    if isinstance(value, dict):
+        for key in value:
             if key in reserved_keys:
-                raise ValidationError("Reserved key detected in attributes.")
+                raise ReservedKeyError(
+                    "Reserved key in attributes."
+                )
