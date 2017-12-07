@@ -1,9 +1,11 @@
 import uuid
 
-from crosswalk.models import Domain
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+
+from crosswalk.models import Domain
+from crosswalk.validators import validate_shallow_dict
 
 
 class Entity(models.Model):
@@ -16,7 +18,7 @@ class Entity(models.Model):
         on_delete=models.PROTECT,
     )
 
-    attributes = JSONField()
+    attributes = JSONField(validators=[validate_shallow_dict])
 
     alias_for = models.ForeignKey(
         'self',
@@ -60,4 +62,4 @@ class Entity(models.Model):
         return bool(self.superseded_by)
 
     def __str__(self):
-        return self.uuid.hex
+        return self.attributes.get('name', self.uuid.hex)

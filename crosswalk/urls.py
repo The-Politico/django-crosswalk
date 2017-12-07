@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import BestMatch, BulkCreate, ClientCheck
+from .views import BestMatch, BulkCreate, ClientCheck, DeleteMatch
 from .viewsets import DomainViewSet, EntityViewSet
 
 router = routers.DefaultRouter()
@@ -31,5 +31,6 @@ urlpatterns = [
     ),
     path(r'api/bulk-create/<slug:domain>/', BulkCreate.as_view()),
     path(r'api/best-match/<slug:domain>/', BestMatch.as_view()),
+    path(r'api/delete-match/<slug:domain>/', DeleteMatch.as_view()),
     path(r'api/client-check/', ClientCheck.as_view()),
 ]

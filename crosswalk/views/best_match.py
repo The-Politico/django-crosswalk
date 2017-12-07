@@ -9,15 +9,7 @@ from crosswalk.serializers import EntitySerializer
 
 
 class BestMatch(AuthenticatedView):
-    def query(self, domain_slug):
-        try:
-            self.domain = Domain.objects.get(slug=domain_slug)
-        except ObjectDoesNotExist:
-            Response(
-                {"message": "Domain not found."},
-                status=status.HTTP_200_OK
-            )
-
+    def query(self):
         entities = Entity.objects.filter(domain=self.domain)
         entities = entities.filter(attributes__contains=self.match_attrs)
 
@@ -39,15 +31,20 @@ class BestMatch(AuthenticatedView):
         self.query_field = params.pop('query_field')[0]
         self.query_value = params.pop('query_value')[0]
         self.match_attrs = params
-        self.query(domain)
 
-        return Response(
-            {
-                "entity": EntitySerializer(self.entity).data,
-                "match_score": self.score,
-            },
-            status=status.HTTP_200_OK
-        )
+        try:
+            self.domain = Domain.objects.get(slug=domain)
+        except ObjectDoesNotExist:
+            Response({
+                "message": "Domain not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        self.query()
+
+        return Response({
+            "entity": EntitySerializer(self.entity).data,
+            "match_score": self.score,
+        }, status=status.HTTP_200_OK)
 
     def post(self, request, domain):
         """
@@ -60,7 +57,15 @@ class BestMatch(AuthenticatedView):
         self.query_value = self.data.get('query_value')
         self.match_attrs = self.data.get('match_attrs', {})
         threshold = self.data.get('create_threshold')
-        self.query(domain)
+
+        try:
+            self.domain = Domain.objects.get(slug=domain)
+        except ObjectDoesNotExist:
+            Response({
+                "message": "Domain not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        self.query()
 
         created = False
         if self.score < threshold:
@@ -76,11 +81,8 @@ class BestMatch(AuthenticatedView):
             entity.save()
             self.entity = entity
 
-        return Response(
-            {
-                "entity": EntitySerializer(self.entity).data,
-                "created": created,
-                "match_score": self.score,
-            },
-            status=status.HTTP_200_OK
-        )
+        return Response({
+            "entity": EntitySerializer(self.entity).data,
+            "created": created,
+            "match_score": self.score,
+        }, status=status.HTTP_200_OK)
