@@ -35,7 +35,9 @@ By convention, an entity that is related to another entity in the same domain is
 
 Let's say we also had a more general domain of :code:`people`. We could say :code:`Bill Clinton` the politician is superseded by :code:`Bill Clinton` the person and represent that relationship with a foreign key. This is often exactly how we model entities that belong to multiple domains.
 
-These are conventions and are not enforced at the database level. So it's up to you to use them in a way that suits your data. On the model, every entity has a foreign key for aliasing and superseding, which you can use to chain canonical references. Django-crosswalk will traverse that chain to the highest canonical entity when returning query results.
+These are conventions and are not enforced at the database level. So it's up to you to use them in a way that suits your data. On the model, every entity has a foreign key for aliasing and superseding, which you can use to chain canonical references.
+
+Django-crosswalk will traverse that chain to the highest canonical alias entity when returning query results. It will not traverse superseding relationships.
 
 Attributes
 ----------
@@ -48,4 +50,4 @@ After you've created them, you can use attributes to create additional blocking 
 
   Nested attributes are not allowed in django-crosswalk. Django-crosswalk is focused solely on entity resolution and record linkage, not in being a complete resource of all information about your entities. Complex data should be kept in other databases.
 
-  There are some reserved attribute names. Django-crosswalk will throw a validation error if you try to use them: :code:`entity`, :code:`created`, :code:`match_score`, :code:`uuid`, :code:`aliased`, :code:`superseding`.
+  There are some reserved attribute names. Django-crosswalk will throw a validation error if you try to use them: :code:`entity`, :code:`created`, :code:`match_score`, :code:`uuid`, :code:`aliased`.

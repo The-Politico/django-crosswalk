@@ -24,9 +24,10 @@ class CreateMatchedAlias(AuthenticatedView):
         try:
             domain = Domain.objects.get(slug=domain)
         except ObjectDoesNotExist:
-            Response({
-                "message": "Domain not found."
-            }, status=status.HTTP_404_NOT_FOUND)
+            Response(
+                "Domain not found.",
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         entities = Entity.objects.filter(domain=domain)
         entities = entities.filter(attributes__contains=block_attrs)
@@ -55,26 +56,19 @@ class CreateMatchedAlias(AuthenticatedView):
         )
 
         if entities.count() > 1:
-            return Response({
-                "message": (
-                    "Found more than one alias candiate for entity. "
-                    "Be more specific?"
-                )
-            }, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                "More than one alias candiate for entity.",
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         entity = entities.first()
 
         created = False
         aliased = False
-        superseding = False
 
         while entity.alias_for:
             aliased = True
             entity = entity.alias_for
-
-        while entity.superseded_by:
-            superseding = True
-            entity = entity.superseded_by
 
         if score > threshold:
             created = True
@@ -95,10 +89,10 @@ class CreateMatchedAlias(AuthenticatedView):
                 "entity": EntitySerializer(entity).data,
                 "created": created,
                 "aliased": aliased,
-                "superseding": superseding,
                 "match_score": score,
             }, status=status.HTTP_200_OK)
 
-        return Response({
-            "message": "No alias candidate found above threshold."
-        }, status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            "No alias candidate found above threshold.",
+            status=status.HTTP_404_NOT_FOUND
+        )

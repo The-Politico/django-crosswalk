@@ -3,3 +3,4 @@ from .bulk_create import BulkCreate  # noqa
 from .best_match import BestMatch  # noqa
 from .delete_match import DeleteMatch  # noqa
 from .create_matched_alias import CreateMatchedAlias  # noqa
+from .update_match import UpdateMatch  # noqa

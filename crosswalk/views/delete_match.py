@@ -17,22 +17,25 @@ class DeleteMatch(AuthenticatedView):
         try:
             domain = Domain.objects.get(slug=domain)
         except ObjectDoesNotExist:
-            return Response({
-                "message": "Domain not found."
-            }, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                "Domain not found.",
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         entities = Entity.objects.filter(domain=domain)
         entities = entities.filter(attributes__contains=block_attrs)
 
         if entities.count() == 0:
-            return Response({
-                "message": "Entity not found."
-            }, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                "Entity not found.",
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         elif entities.count() > 1:
-            return Response({
-                "message": "Found more than one entity. Be more specific?"
-            }, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                "More than one entity found.",
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         entities.delete()
 

@@ -14,9 +14,10 @@ class BulkCreate(AuthenticatedView):
         try:
             domain = Domain.objects.get(slug=domain)
         except ObjectDoesNotExist:
-            Response({
-                "message": "Domain not found."
-            }, status=status.HTTP_200_OK)
+            Response(
+                "Domain not found.",
+                status=status.HTTP_200_OK
+            )
 
         entities = request.data.copy()
 
@@ -29,15 +30,17 @@ class BulkCreate(AuthenticatedView):
             try:
                 validate_shallow_dict(entity)
             except NestedAttributesError:
-                return Response({
-                    "message": "Cannot create entity with nested attributes."
-                }, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    "Cannot create entity with nested attributes.",
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             try:
                 validate_no_reserved_keys(entity)
             except ReservedKeyError:
-                return Response({
-                    "message": "Reserved key found in entity attributes."
-                }, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    "Reserved key found in entity attributes.",
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
             entity_objects.append(
                 Entity(

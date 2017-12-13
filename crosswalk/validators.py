@@ -13,9 +13,14 @@ def validate_shallow_dict(value):
 
 def validate_no_reserved_keys(value):
     reserved_keys = [
-        'entity', 'created',
-        'match_score', 'uuid',
-        'aliased', 'superseding'
+        'uuid',
+        'domain',
+        'alias_for',
+        'superseded_by',
+        'aliased',
+        'entity',
+        'created',
+        'match_score',
     ]
 
     if isinstance(value, dict):
@@ -24,3 +29,8 @@ def validate_no_reserved_keys(value):
                 raise ReservedKeyError(
                     "Reserved key in attributes."
                 )
+
+
+def full_validation(value):
+    validate_shallow_dict(value)
+    validate_no_reserved_keys(value)

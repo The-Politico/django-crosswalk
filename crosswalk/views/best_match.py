@@ -40,28 +40,23 @@ class BestMatch(AuthenticatedView):
         try:
             self.domain = Domain.objects.get(slug=domain)
         except ObjectDoesNotExist:
-            Response({
-                "message": "Domain not found."
-            }, status=status.HTTP_404_NOT_FOUND)
+            Response(
+                "Domain not found.",
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         self.query()
 
         aliased = False
-        superseding = False
 
         while self.entity.alias_for:
             aliased = True
             self.entity = self.entity.alias_for
 
-        while self.entity.superseded_by:
-            superseding = True
-            self.entity = self.entity.superseded_by
-
         return Response({
             "entity": EntitySerializer(self.entity).data,
             "match_score": self.score,
             "aliased": aliased,
-            "superseding": superseding,
         }, status=status.HTTP_200_OK)
 
     def post(self, request, domain):
@@ -82,15 +77,15 @@ class BestMatch(AuthenticatedView):
         try:
             self.domain = Domain.objects.get(slug=domain)
         except ObjectDoesNotExist:
-            Response({
-                "message": "Domain not found."
-            }, status=status.HTTP_404_NOT_FOUND)
+            Response(
+                "Domain not found.",
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         self.query()
 
         created = False
         aliased = False
-        superseding = False
 
         if self.score < threshold:
             created = True
@@ -112,14 +107,9 @@ class BestMatch(AuthenticatedView):
             aliased = True
             self.entity = self.entity.alias_for
 
-        while self.entity.superseded_by:
-            superseding = True
-            self.entity = self.entity.superseded_by
-
         return Response({
             "entity": EntitySerializer(self.entity).data,
             "created": created,
             "match_score": self.score,
             "aliased": aliased,
-            "superseding": superseding,
         }, status=status.HTTP_200_OK)

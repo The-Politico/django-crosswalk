@@ -2,18 +2,24 @@ from django.urls import include, path
 from rest_framework import routers
 
 from .views import (BestMatch, BulkCreate, ClientCheck, CreateMatchedAlias,
-                    DeleteMatch)
-from .viewsets import DomainViewSet, EntityViewSet
+                    DeleteMatch, UpdateMatch)
+from .viewsets import DomainViewSet, EntityDomainViewSet, EntityViewSet
 
 router = routers.DefaultRouter()
 
 router.register('domains', DomainViewSet)
 
-entity_list = EntityViewSet.as_view({
+entity_detail = EntityViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy'
+})
+entity_domain_list = EntityDomainViewSet.as_view({
     'get': 'list',
     'post': 'create'
 })
-entity_detail = EntityViewSet.as_view({
+entity_domain_detail = EntityDomainViewSet.as_view({
     'get': 'retrieve',
     'put': 'update',
     'patch': 'partial_update',
@@ -23,19 +29,37 @@ entity_detail = EntityViewSet.as_view({
 urlpatterns = [
     path('api/', include(router.urls)),
     path(
-        'api/entities/<slug:domain>/', entity_list,
-        name="crosswalk-entity-lists"
+        'api/domains/<slug:domain>/entities/', entity_domain_list,
+        name="crosswalk-entity-domain-lists"
+    ),
+
+    path(
+        'api/domains/<slug:domain>/entities/bulk-create/',
+        BulkCreate.as_view()
     ),
     path(
-        'api/entities/<slug:domain>/<uuid:pk>/', entity_detail,
-        name="crosswalk-entity-detail"
+        'api/domains/<slug:domain>/entities/best-match/',
+        BestMatch.as_view()
     ),
-    path('api/bulk-create/<slug:domain>/', BulkCreate.as_view()),
-    path('api/best-match/<slug:domain>/', BestMatch.as_view()),
-    path('api/delete-match/<slug:domain>/', DeleteMatch.as_view()),
     path(
-        'api/create-matched-alias/<slug:domain>/',
+        'api/domains/<slug:domain>/entities/delete-match/',
+        DeleteMatch.as_view()
+    ),
+    path(
+        'api/domains/<slug:domain>/entities/update-match/',
+        UpdateMatch.as_view()
+    ),
+    path(
+        'api/domains/<slug:domain>/entities/create-matched-alias/',
         CreateMatchedAlias.as_view()
+    ),
+    path(
+        'api/domains/<slug:domain>/entities/<uuid:pk>/', entity_domain_detail,
+        name="crosswalk-entity-domain-detail"
+    ),
+    path(
+        'api/entities/<uuid:pk>/', entity_detail,
+        name="crosswalk-entity-detail"
     ),
     path('api/client-check/', ClientCheck.as_view()),
 ]
