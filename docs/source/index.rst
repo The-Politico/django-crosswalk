@@ -8,6 +8,7 @@ Welcome to politico-elections' documentation!
    :maxdepth: 2
 
    Why this? <why>
+   Concepts <concepts>
    Using the client <client>
 
 

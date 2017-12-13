@@ -17,7 +17,7 @@ class CreateMatchedAlias(AuthenticatedView):
         data = request.data.copy()
         query_field = data.get('query_field')
         query_value = data.get('query_value')
-        match_attrs = data.get('match_attrs', {})
+        block_attrs = data.get('block_attrs', {})
         create_attrs = data.get('create_attrs', {})
         threshold = data.get('create_threshold')
 
@@ -29,7 +29,7 @@ class CreateMatchedAlias(AuthenticatedView):
             }, status=status.HTTP_404_NOT_FOUND)
 
         entities = Entity.objects.filter(domain=domain)
-        entities = entities.filter(attributes__contains=match_attrs)
+        entities = entities.filter(attributes__contains=block_attrs)
 
         entity_values = [e.attributes[query_field] for e in entities]
         match, score = process.extractOne(
@@ -42,7 +42,7 @@ class CreateMatchedAlias(AuthenticatedView):
         ).first()
 
         entities = Entity.objects.filter(domain=domain)
-        entities = entities.filter(attributes__contains=match_attrs)
+        entities = entities.filter(attributes__contains=block_attrs)
 
         entity_values = [e.attributes[query_field] for e in entities]
         match, score = process.extractOne(
@@ -82,7 +82,7 @@ class CreateMatchedAlias(AuthenticatedView):
             alias = Entity(
                 attributes={
                     **{query_field: query_value},
-                    **match_attrs,
+                    **block_attrs,
                     **create_attrs
                 },
                 alias_for=entity,

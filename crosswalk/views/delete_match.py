@@ -1,9 +1,8 @@
+from crosswalk.authentication import AuthenticatedView
+from crosswalk.models import Domain, Entity
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.response import Response
-
-from crosswalk.authentication import AuthenticatedView
-from crosswalk.models import Domain, Entity
 
 
 class DeleteMatch(AuthenticatedView):
@@ -13,7 +12,7 @@ class DeleteMatch(AuthenticatedView):
         POST searches for an entity based on criteria. If only one entity is
         returned from query, it is deleted. If more than one, return 403.
         """
-        match_attrs = request.data.copy()
+        block_attrs = request.data.copy()
 
         try:
             domain = Domain.objects.get(slug=domain)
@@ -23,7 +22,7 @@ class DeleteMatch(AuthenticatedView):
             }, status=status.HTTP_404_NOT_FOUND)
 
         entities = Entity.objects.filter(domain=domain)
-        entities = entities.filter(attributes__contains=match_attrs)
+        entities = entities.filter(attributes__contains=block_attrs)
 
         if entities.count() == 0:
             return Response({

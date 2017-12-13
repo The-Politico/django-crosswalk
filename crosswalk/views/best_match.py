@@ -10,7 +10,7 @@ from rest_framework.response import Response
 class BestMatch(AuthenticatedView):
     def query(self):
         entities = Entity.objects.filter(domain=self.domain)
-        entities = entities.filter(attributes__contains=self.match_attrs)
+        entities = entities.filter(attributes__contains=self.block_attrs)
 
         entity_values = [e.attributes[self.query_field] for e in entities]
         match, score = process.extractOne(
@@ -35,7 +35,7 @@ class BestMatch(AuthenticatedView):
         params = request.query_params.copy()
         self.query_field = params.pop('query_field')[0]
         self.query_value = params.pop('query_value')[0]
-        self.match_attrs = params
+        self.block_attrs = params
 
         try:
             self.domain = Domain.objects.get(slug=domain)
@@ -75,7 +75,7 @@ class BestMatch(AuthenticatedView):
         self.data = request.data.copy()
         self.query_field = self.data.get('query_field')
         self.query_value = self.data.get('query_value')
-        self.match_attrs = self.data.get('match_attrs', {})
+        self.block_attrs = self.data.get('block_attrs', {})
         self.create_attrs = self.data.get('create_attrs', {})
         threshold = self.data.get('create_threshold')
 
@@ -99,7 +99,7 @@ class BestMatch(AuthenticatedView):
                 uuid=uuid,
                 attributes={
                     **{self.query_field: self.query_value},
-                    **self.match_attrs,
+                    **self.block_attrs,
                     **self.create_attrs,
                 },
                 created_by=self.user,

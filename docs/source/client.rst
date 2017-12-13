@@ -1,9 +1,21 @@
 Using the client
 ================
 
+The client lets you interact with your crosswalk database much like you would any standard library.
+
+
+Install
+-------
+
+The client is maintained as a separate package, which you can install via pip.
+
+::
+
+  $ pip install django-crosswalk-client
 
 Client
 ------
+
 
 Creating a client instance
 ''''''''''''''''''''''''''
@@ -31,6 +43,12 @@ You can also instantiate a client with defaults.
       domain='states', # default is None
       create_threshold=90 # default is 80
   )
+
+In order to query, create or edit entities, you must set a domain for your client to work on. You can set it anytime like this:
+
+.. code-block:: python
+
+  client.set_domain('states')
 
 
 Domain
@@ -103,10 +121,10 @@ Set the domain if not already set, then provide a simple dictionary with the att
     entity.name
     # California
 
-Restricting a fuzzy query to a subset
-'''''''''''''''''''''''''''''''''''''
+Restricting a fuzzy query to a block
+''''''''''''''''''''''''''''''''''''
 
-Pass a dictionary of match attributes to create a subset of entities *before* querying with a fuzzy string.
+Pass a dictionary of block attributes to reduce the number of entities *before* querying with a fuzzy string.
 
 .. code-block:: python
 
@@ -114,7 +132,7 @@ Pass a dictionary of match attributes to create a subset of entities *before* qu
     # by fuzzy match.
     entity = client.best_match(
       {"name": "Arkansas"},
-      match_attrs={"postal_code": "KS"}
+      block_attrs={"postal_code": "KS"}
     )
 
     entity.name
@@ -147,7 +165,7 @@ You can supply match attributes to restrict matches to a subset.
 
     entity = client.best_match_or_create(
         {"name": "Narnia"},
-        match_attrs={"postal_code": "NA"},
+        block_attrs={"postal_code": "NA"},
         create_threshold=80,
     )
 
@@ -178,6 +196,6 @@ Delete a matched entity
 
     client.delete_match({"name": "Narnia", "postal_code": "NA"})
 
-.. note::
+.. warning::
 
     If your match attributes return more than one entity to be deleted, an :code:`UnspecificDeleteRequestError` will be raised. No entities will be deleted.
