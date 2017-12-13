@@ -12,7 +12,7 @@ def validate_shallow_dict(value):
 
 
 def validate_no_reserved_keys(value):
-    reserved_keys = ['entity', 'created', 'match_score']
+    reserved_keys = ['entity', 'created', 'match_score', 'uuid']
 
     if isinstance(value, dict):
         for key in value:

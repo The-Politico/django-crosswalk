@@ -1,12 +1,13 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import BestMatch, BulkCreate, ClientCheck, DeleteMatch
+from .views import (BestMatch, BulkCreate, ClientCheck, CreateMatchedAlias,
+                    DeleteMatch)
 from .viewsets import DomainViewSet, EntityViewSet
 
 router = routers.DefaultRouter()
 
-router.register(r'domains', DomainViewSet)
+router.register('domains', DomainViewSet)
 
 entity_list = EntityViewSet.as_view({
     'get': 'list',
@@ -20,17 +21,21 @@ entity_detail = EntityViewSet.as_view({
 })
 
 urlpatterns = [
-    path(r'api/', include(router.urls)),
+    path('api/', include(router.urls)),
     path(
-        r'api/entities/<slug:domain>/', entity_list,
+        'api/entities/<slug:domain>/', entity_list,
         name="crosswalk-entity-lists"
     ),
     path(
-        r'api/entities/<slug:domain>/<uuid:pk>/', entity_detail,
+        'api/entities/<slug:domain>/<uuid:pk>/', entity_detail,
         name="crosswalk-entity-detail"
     ),
-    path(r'api/bulk-create/<slug:domain>/', BulkCreate.as_view()),
-    path(r'api/best-match/<slug:domain>/', BestMatch.as_view()),
-    path(r'api/delete-match/<slug:domain>/', DeleteMatch.as_view()),
-    path(r'api/client-check/', ClientCheck.as_view()),
+    path('api/bulk-create/<slug:domain>/', BulkCreate.as_view()),
+    path('api/best-match/<slug:domain>/', BestMatch.as_view()),
+    path('api/delete-match/<slug:domain>/', DeleteMatch.as_view()),
+    path(
+        'api/create-matched-alias/<slug:domain>/',
+        CreateMatchedAlias.as_view()
+    ),
+    path('api/client-check/', ClientCheck.as_view()),
 ]

@@ -29,7 +29,7 @@ class Entity(models.Model):
         null=True,
         blank=True,
         related_name='aliases',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         help_text=(
             "An entity in the same domain whose UUID should supersede",
             "this one."
@@ -41,7 +41,7 @@ class Entity(models.Model):
         null=True,
         blank=True,
         related_name='supersedes',
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         help_text=(
             "An entity in another domain whose UUID should supersede",
             "this one."

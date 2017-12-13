@@ -1,12 +1,12 @@
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import status
-from rest_framework.response import Response
-
 from crosswalk.authentication import AuthenticatedView
 from crosswalk.exceptions import NestedAttributesError, ReservedKeyError
 from crosswalk.models import Domain, Entity
+from crosswalk.serializers import EntitySerializer
 from crosswalk.validators import (validate_no_reserved_keys,
                                   validate_shallow_dict)
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework import status
+from rest_framework.response import Response
 
 
 class BulkCreate(AuthenticatedView):
@@ -20,8 +20,12 @@ class BulkCreate(AuthenticatedView):
 
         entities = request.data.copy()
 
-        # Validate entity attributes before creating in bulk
+        entity_objects = []
+
         for entity in entities:
+            uuid = entity.pop("uuid", None)
+
+            # Validate entity attributes before creating in bulk
             try:
                 validate_shallow_dict(entity)
             except NestedAttributesError:
@@ -35,11 +39,22 @@ class BulkCreate(AuthenticatedView):
                     "message": "Reserved key found in entity attributes."
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-        Entity.objects.bulk_create([
-            Entity(domain=domain, attributes=entity)
-            for entity in entities
-        ])
+            entity_objects.append(
+                Entity(
+                    uuid=uuid,
+                    domain=domain,
+                    attributes=entity,
+                )
+            )
+
+        created_entities = Entity.objects.bulk_create(entity_objects)
 
         return Response({
-            "message": "Created {} entities in bulk.".format(len(entities))
+            "entities": [
+                {
+                    "entity": EntitySerializer(entity).data,
+                    "created": True
+                }
+                for entity in created_entities
+            ]
         }, status=status.HTTP_200_OK)
