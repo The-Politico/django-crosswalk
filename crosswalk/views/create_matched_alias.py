@@ -1,8 +1,8 @@
 from crosswalk.authentication import AuthenticatedView
 from crosswalk.models import Domain, Entity
 from crosswalk.serializers import EntitySerializer
+from crosswalk.utils import import_class
 from django.core.exceptions import ObjectDoesNotExist
-from fuzzywuzzy import process
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -20,11 +20,17 @@ class CreateMatchedAlias(AuthenticatedView):
         block_attrs = data.get('block_attrs', {})
         create_attrs = data.get('create_attrs', {})
         threshold = data.get('create_threshold')
+        scorer = import_class(
+            data.get(
+                'scorer',
+                'crosswalk.scorers.fuzzywuzzy.default_process'
+            )
+        )
 
         try:
             domain = Domain.objects.get(slug=domain)
         except ObjectDoesNotExist:
-            Response(
+            return Response(
                 "Domain not found.",
                 status=status.HTTP_404_NOT_FOUND
             )
@@ -33,10 +39,7 @@ class CreateMatchedAlias(AuthenticatedView):
         entities = entities.filter(attributes__contains=block_attrs)
 
         entity_values = [e.attributes[query_field] for e in entities]
-        match, score = process.extractOne(
-            query_value,
-            entity_values,
-        )
+        match, score = scorer(query_value, entity_values)
 
         entity = entities.filter(
             **{'attributes__{}'.format(query_field): match}
@@ -46,10 +49,7 @@ class CreateMatchedAlias(AuthenticatedView):
         entities = entities.filter(attributes__contains=block_attrs)
 
         entity_values = [e.attributes[query_field] for e in entities]
-        match, score = process.extractOne(
-            query_value,
-            entity_values,
-        )
+        match, score = scorer(query_value, entity_values)
 
         entities = entities.filter(
             **{'attributes__{}'.format(query_field): match}

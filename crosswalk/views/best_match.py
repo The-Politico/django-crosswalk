@@ -1,28 +1,13 @@
 from crosswalk.authentication import AuthenticatedView
 from crosswalk.models import Domain, Entity
 from crosswalk.serializers import EntitySerializer
+from crosswalk.utils import import_class
 from django.core.exceptions import ObjectDoesNotExist
-from fuzzywuzzy import process
 from rest_framework import status
 from rest_framework.response import Response
 
 
 class BestMatch(AuthenticatedView):
-    def query(self):
-        entities = Entity.objects.filter(domain=self.domain)
-        entities = entities.filter(attributes__contains=self.block_attrs)
-
-        entity_values = [e.attributes[self.query_field] for e in entities]
-        match, score = process.extractOne(
-            self.query_value,
-            entity_values,
-        )
-
-        self.entity = entities.filter(
-            **{'attributes__{}'.format(self.query_field): match}
-        ).first()
-
-        self.score = score
 
     def get(self, request, domain):
         """
@@ -31,31 +16,44 @@ class BestMatch(AuthenticatedView):
         If the entity is an alias or is superseded by another entity in another
         domain, the aliased or superseding entity is returned.
         """
-        self.user = request.user
         params = request.query_params.copy()
-        self.query_field = params.pop('query_field')[0]
-        self.query_value = params.pop('query_value')[0]
-        self.block_attrs = params
+        query_field = params.pop('query_field')[0]
+        query_value = params.pop('query_value')[0]
+        block_attrs = params
+        scorer = import_class(
+            params.get(
+                'scorer',
+                'crosswalk.scorers.fuzzywuzzy.default_process'
+            )
+        )
 
         try:
-            self.domain = Domain.objects.get(slug=domain)
+            domain = Domain.objects.get(slug=domain)
         except ObjectDoesNotExist:
-            Response(
+            return Response(
                 "Domain not found.",
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        self.query()
+        entities = Entity.objects.filter(domain=domain)
+        entities = entities.filter(attributes__contains=block_attrs)
+
+        entity_values = [e.attributes[query_field] for e in entities]
+        match, score = scorer(query_value, entity_values)
+
+        entity = entities.filter(
+            **{'attributes__{}'.format(query_field): match}
+        ).first()
 
         aliased = False
 
-        while self.entity.alias_for:
+        while entity.alias_for:
             aliased = True
-            self.entity = self.entity.alias_for
+            entity = entity.alias_for
 
         return Response({
-            "entity": EntitySerializer(self.entity).data,
-            "match_score": self.score,
+            "entity": EntitySerializer(entity).data,
+            "match_score": score,
             "aliased": aliased,
         }, status=status.HTTP_200_OK)
 
@@ -66,50 +64,63 @@ class BestMatch(AuthenticatedView):
         If the found entity is an alias or is superseded by another entity in
         another domain, the aliased or superseding entity is returned.
         """
-        self.user = request.user
-        self.data = request.data.copy()
-        self.query_field = self.data.get('query_field')
-        self.query_value = self.data.get('query_value')
-        self.block_attrs = self.data.get('block_attrs', {})
-        self.create_attrs = self.data.get('create_attrs', {})
-        threshold = self.data.get('create_threshold')
+        user = request.user
+        data = request.data.copy()
+        query_field = data.get('query_field')
+        query_value = data.get('query_value')
+        block_attrs = data.get('block_attrs', {})
+        create_attrs = data.get('create_attrs', {})
+        threshold = data.get('create_threshold')
+        scorer = import_class(
+            data.get(
+                'scorer',
+                'crosswalk.scorers.fuzzywuzzy.default_process'
+            )
+        )
 
         try:
-            self.domain = Domain.objects.get(slug=domain)
+            domain = Domain.objects.get(slug=domain)
         except ObjectDoesNotExist:
-            Response(
+            return Response(
                 "Domain not found.",
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        self.query()
+        entities = Entity.objects.filter(domain=domain)
+        entities = entities.filter(attributes__contains=block_attrs)
+
+        entity_values = [e.attributes[query_field] for e in entities]
+        match, score = scorer(query_value, entity_values)
+
+        entity = entities.filter(
+            **{'attributes__{}'.format(query_field): match}
+        ).first()
 
         created = False
         aliased = False
 
-        if self.score < threshold:
+        if score < threshold:
             created = True
-            uuid = self.create_attrs.pop('uuid', None)
+            uuid = create_attrs.pop('uuid', None)
             entity = Entity(
                 uuid=uuid,
                 attributes={
-                    **{self.query_field: self.query_value},
-                    **self.block_attrs,
-                    **self.create_attrs,
+                    **{query_field: query_value},
+                    **block_attrs,
+                    **create_attrs,
                 },
-                created_by=self.user,
-                domain=self.domain
+                created_by=user,
+                domain=domain
             )
             entity.save()
-            self.entity = entity
 
-        while self.entity.alias_for:
+        while entity.alias_for:
             aliased = True
-            self.entity = self.entity.alias_for
+            entity = entity.alias_for
 
         return Response({
-            "entity": EntitySerializer(self.entity).data,
+            "entity": EntitySerializer(entity).data,
             "created": created,
-            "match_score": self.score,
+            "match_score": score,
             "aliased": aliased,
         }, status=status.HTTP_200_OK)

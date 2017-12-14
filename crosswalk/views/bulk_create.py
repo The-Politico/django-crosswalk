@@ -14,7 +14,7 @@ class BulkCreate(AuthenticatedView):
         try:
             domain = Domain.objects.get(slug=domain)
         except ObjectDoesNotExist:
-            Response(
+            return Response(
                 "Domain not found.",
                 status=status.HTTP_200_OK
             )
