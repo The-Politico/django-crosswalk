@@ -22,6 +22,7 @@ class DomainSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Domain.objects.all(),
         required=False,
+        allow_null=True,
     )
 
     def create(self, validated_data):
@@ -33,7 +34,7 @@ class DomainSerializer(serializers.ModelSerializer):
             parent = None
         domain, created = Domain.objects.get_or_create(
             name=validated_data.get('name'),
-            parent=parent,
+            defaults={"parent": parent}
         )
         return domain
 
@@ -65,11 +66,13 @@ class EntitySerializer(serializers.ModelSerializer):
     alias_for = serializers.PrimaryKeyRelatedField(
         queryset=Entity.objects.all(),
         required=False,
+        allow_null=True,
         pk_field=serializers.UUIDField(format='hex_verbose'),
     )
     superseded_by = serializers.PrimaryKeyRelatedField(
         queryset=Entity.objects.all(),
         required=False,
+        allow_null=True,
         pk_field=serializers.UUIDField(format='hex_verbose'),
     )
 
