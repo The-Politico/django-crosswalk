@@ -1,10 +1,11 @@
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework import status
+from rest_framework.response import Response
+
 from crosswalk.authentication import AuthenticatedView
 from crosswalk.models import Domain, Entity
 from crosswalk.serializers import EntitySerializer
 from crosswalk.utils import import_class
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import status
-from rest_framework.response import Response
 
 
 class CreateMatchedAlias(AuthenticatedView):
@@ -19,13 +20,9 @@ class CreateMatchedAlias(AuthenticatedView):
         query_value = data.get('query_value')
         block_attrs = data.get('block_attrs', {})
         create_attrs = data.get('create_attrs', {})
-        threshold = data.get('create_threshold')
-        scorer = import_class(
-            data.get(
-                'scorer',
-                'crosswalk.scorers.fuzzywuzzy.default_process'
-            )
-        )
+        threshold = data.get('threshold')
+        scorer_class = data.get('scorer', 'fuzzywuzzy.default_process')
+        scorer = import_class('crosswalk.scorers.{}'.format(scorer_class))
 
         try:
             domain = Domain.objects.get(slug=domain)
