@@ -30,10 +30,7 @@ class Entity(models.Model):
         blank=True,
         related_name='aliases',
         on_delete=models.CASCADE,
-        help_text=(
-            "An entity in the same domain whose UUID should supersede",
-            "this one."
-        ),
+        help_text="Entity in the same domain whose UUID supersedes this one.",
     )
 
     superseded_by = models.ForeignKey(
@@ -42,10 +39,7 @@ class Entity(models.Model):
         blank=True,
         related_name='supersedes',
         on_delete=models.SET_NULL,
-        help_text=(
-            "An entity in another domain whose UUID should supersede",
-            "this one."
-        ),
+        help_text="Entity in another domain whose UUID supersedes this one.",
     )
 
     created = models.DateTimeField(auto_now_add=True)
@@ -67,3 +61,7 @@ class Entity(models.Model):
 
     def __str__(self):
         return self.attributes.get('name', self.uuid.hex)
+
+    class Meta:
+        verbose_name_plural = "entities"
+        unique_together = ("domain", "attributes")

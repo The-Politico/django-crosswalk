@@ -8,11 +8,12 @@ from crosswalk.serializers import EntitySerializer
 from crosswalk.utils import import_class
 
 
-class CreateMatchedAlias(AuthenticatedView):
+class AliasOrCreate(AuthenticatedView):
 
     def post(self, request, domain):
         """
-        Create an alias if an entity is found above a certain match threshold.
+        Create an alias if an entity is found above a certain match threshold
+        or create a new entity.
         """
         user = request.user
         data = request.data.copy()
@@ -32,16 +33,7 @@ class CreateMatchedAlias(AuthenticatedView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        entities = Entity.objects.filter(domain=domain)
-        entities = entities.filter(attributes__contains=block_attrs)
-
-        entity_values = [e.attributes[query_field] for e in entities]
-        match, score = scorer(query_value, entity_values)
-
-        entity = entities.filter(
-            **{'attributes__{}'.format(query_field): match}
-        ).first()
-
+        # Find the best match for a query
         entities = Entity.objects.filter(domain=domain)
         entities = entities.filter(attributes__contains=block_attrs)
 
@@ -60,36 +52,42 @@ class CreateMatchedAlias(AuthenticatedView):
 
         entity = entities.first()
 
-        created = False
-        aliased = False
+        attributes = {
+            **{query_field: query_value},
+            **block_attrs,
+            **create_attrs
+        }
 
-        while entity.alias_for:
-            aliased = True
-            entity = entity.alias_for
+        if entity.attributes == attributes:
+            return Response(
+                "Entity appears to already exist.",
+                status=status.HTTP_409_CONFLICT
+            )
 
         if score > threshold:
-            created = True
             aliased = True
             alias = Entity(
-                attributes={
-                    **{query_field: query_value},
-                    **block_attrs,
-                    **create_attrs
-                },
+                attributes=attributes,
                 alias_for=entity,
                 created_by=user,
                 domain=domain
             )
             alias.save()
 
-            return Response({
-                "entity": EntitySerializer(entity).data,
-                "created": created,
-                "aliased": aliased,
-                "match_score": score,
-            }, status=status.HTTP_200_OK)
+            while entity.alias_for:
+                entity = entity.alias_for
+        else:
+            aliased = False
+            entity = Entity(
+                attributes=attributes,
+                created_by=user,
+                domain=domain
+            )
+            entity.save()
 
-        return Response(
-            "No alias candidate found above threshold.",
-            status=status.HTTP_404_NOT_FOUND
-        )
+        return Response({
+            "entity": EntitySerializer(entity).data,
+            "created": True,
+            "aliased": aliased,
+            "match_score": score,
+        }, status=status.HTTP_200_OK)

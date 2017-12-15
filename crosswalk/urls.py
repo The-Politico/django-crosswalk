@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import (BestMatch, BulkCreate, ClientCheck, CreateMatchedAlias,
+from .views import (AliasOrCreate, BestMatch, BulkCreate, ClientCheck,
                     DeleteMatch, UpdateMatch)
 from .viewsets import DomainViewSet, EntityDomainViewSet, EntityViewSet
 
@@ -50,8 +50,8 @@ urlpatterns = [
         UpdateMatch.as_view()
     ),
     path(
-        'api/domains/<slug:domain>/entities/create-matched-alias/',
-        CreateMatchedAlias.as_view()
+        'api/domains/<slug:domain>/entities/alias-or-create/',
+        AliasOrCreate.as_view()
     ),
     path(
         'api/domains/<slug:domain>/entities/<uuid:pk>/', entity_domain_detail,

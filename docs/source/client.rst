@@ -40,15 +40,39 @@ You can also instantiate a client with defaults.
   client = Client(
       token,
       service,
-      domain='states', # default is None
-      create_threshold=90 # default is 80
+      domain=None, # default
+      scorer='fuzzywuzzy.default_process', # default
+      threshold=80, # default
   )
 
-In order to query, create or edit entities, you must set a domain for your client to work on. You can set it anytime like this:
+domain
+''''''
+
+In order to query, create or edit entities, you must include a domain. You can set a default anytime:
 
 .. code-block:: python
 
   client.set_domain('states')
+
+
+scorer
+''''''
+
+The string module path to a scorer function in :code:`crosswalk.scorers`.
+
+.. code-block:: python
+
+  client.set_scorer('fuzzywuzzy.token_sort_ratio_process')
+
+
+threshold
+'''''''''
+
+The default threshold is used when creating entities based on a match score. For all default match scorers, the score should be an integer between generally 0 - 100.
+
+.. code-block:: python
+
+  client.set_threshold(90)
 
 
 Domain
@@ -63,6 +87,13 @@ Create a domain
 
     domain.name
     # states
+
+Update a domain
+'''''''''''''''
+
+.. code-block:: python
+
+    client.update_domain('states', {"parent": "country"})
 
 Delete a domain
 '''''''''''''''

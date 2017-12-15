@@ -12,10 +12,10 @@ class BestMatch(AuthenticatedView):
 
     def get(self, request, domain):
         """
-        Get the best matched entity of a given query.
+        Get the best matched entity for a given query.
 
-        If the entity is an alias or is superseded by another entity in another
-        domain, the aliased or superseding entity is returned.
+        If the entity is an alias of another entity, the aliased entity is
+        returned.
         """
         params = request.query_params.copy()
         query_field = params.pop('query_field')[0]
@@ -56,10 +56,11 @@ class BestMatch(AuthenticatedView):
 
     def post(self, request, domain):
         """
-        Create an entity if one is not found above a certain match threshold.
+        Get the best matched entity for a given query or create an entity if
+        one is not found above a certain match threshold.
 
-        If the found entity is an alias or is superseded by another entity in
-        another domain, the aliased or superseding entity is returned.
+        If the entity is an alias of another entity, the aliased entity is
+        returned.
         """
         user = request.user
         data = request.data.copy()
