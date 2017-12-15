@@ -1,7 +1,8 @@
-from crosswalk.authentication import TokenAuthentication
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from crosswalk.authentication import TokenAuthentication
 
 from .models import Domain, Entity
 from .serializers import DomainSerializer, EntitySerializer
@@ -19,6 +20,13 @@ class EntityDomainViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         domain = self.kwargs['domain']
         return Entity.objects.filter(domain__name=domain)
+
+    def list(self, request, domain):
+        """Allow passing block attr params to filter queryset."""
+        params = request.query_params.copy()
+        queryset = self.get_queryset().filter(attributes__contains=params)
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
 
 
 class EntityViewSet(viewsets.ModelViewSet):

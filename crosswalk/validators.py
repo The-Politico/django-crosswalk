@@ -14,6 +14,7 @@ def validate_shallow_dict(value):
 def validate_no_reserved_keys(value):
     reserved_keys = [
         'uuid',
+        'attributes',
         'domain',
         'alias_for',
         'superseded_by',
