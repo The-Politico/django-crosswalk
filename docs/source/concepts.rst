@@ -61,6 +61,8 @@ After you've created them, you can use attributes to create additional blocking 
 
   Nested attributes are not allowed. Django-crosswalk is focused solely on entity resolution and record linkage, not in being a complete resource of all information about your entities. Complex data should be kept in other databases, probably linked by the UUID.
 
+  In general, we recommend snake-casing attribute names, though this is not enforced.
+
   There are some reserved attribute names. Django-crosswalk will throw a validation error if you try to use them:
 
   - :code:`alias_for`

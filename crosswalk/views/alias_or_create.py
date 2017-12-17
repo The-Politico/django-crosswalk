@@ -21,6 +21,7 @@ class AliasOrCreate(AuthenticatedView):
         query_value = data.get('query_value')
         block_attrs = data.get('block_attrs', {})
         create_attrs = data.get('create_attrs', {})
+        return_canonical = data.get('return_canonical', True)
         threshold = data.get('threshold')
         scorer_class = data.get('scorer', 'fuzzywuzzy.default_process')
         scorer = import_class('crosswalk.scorers.{}'.format(scorer_class))
@@ -73,9 +74,9 @@ class AliasOrCreate(AuthenticatedView):
                 domain=domain
             )
             alias.save()
-
-            while entity.alias_for:
-                entity = entity.alias_for
+            if return_canonical:
+                while entity.alias_for:
+                    entity = entity.alias_for
         else:
             aliased = False
             entity = Entity(

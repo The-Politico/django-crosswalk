@@ -4,7 +4,7 @@ Quick start
 Prerequisites
 -------------
 
-- Python ≥ 3.6
+- Python ≥ 3
 - Django ≥ 2.0
 - PostgreSQL ≥ 9.4
 

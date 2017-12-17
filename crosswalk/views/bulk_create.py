@@ -48,6 +48,7 @@ class BulkCreate(AuthenticatedView):
                     uuid=uuid,
                     domain=domain,
                     attributes=entity,
+                    created_by=request.user
                 )
             )
 

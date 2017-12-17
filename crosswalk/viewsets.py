@@ -46,7 +46,17 @@ class EntityViewSet(viewsets.ModelViewSet):
         }
         serializer = self.serializer_class(
             instance,
-            data={"attributes": new_attributes},
+            data={
+                "attributes": new_attributes,
+                "alias_for": request.data.get(
+                    "alias_for",
+                    instance.alias_for
+                ),
+                "superseded_by": request.data.get(
+                    "superseded_by",
+                    instance.superseded_by
+                )
+            },
             partial=True
         )
         serializer.is_valid(raise_exception=True)
