@@ -24,6 +24,8 @@ What can you do with it?
 
 We use a few simple record linkage techniques to help you easily model and query the entities and aliases in your database.
 
-Save your entities with arbitrary attributes that you can make fuzzy queries against or build blocking indexes on the fly, which help break your database apart into blocks of likely matches that improve query precision.
+Save your entities with arbitrary attributes that you can make fuzzy queries against or build blocking indexes with on the fly, which help break your database apart into blocks of likely matches that improve query precision.
 
 The app also helps you maintain records of known aliases and automatically resolve queries against them to return canonical records.
+
+You'll also get UUIDs for each entity in your database that you can use as a primary key across your data projects.

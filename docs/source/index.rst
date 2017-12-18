@@ -8,7 +8,7 @@ Welcome to django-crosswalk's documentation!
    :maxdepth: 2
 
    Why this? <why>
-   Quick start <quickstart>
+   Quickstart <quickstart>
    Concepts <concepts>
    Using the client <client>
 
