@@ -13,9 +13,9 @@ What's in it?
 
 The project consists of two packages.
 
-Django-chartwerk is a pluggable Django application that creates tables to house your entities. It also manages tokens to authenticate users who can query and modify records through a robust API.
+`Django-chartwerk <https://github.com/The-Politico/django-crosswalk>`_ is a pluggable Django application that creates tables to house your entities. It also manages tokens to authenticate users who can query and modify records through a robust API.
 
-Django-chartwerk-client is a tiny library to make interacting with the API easy to do inline in your code.
+`Django-chartwerk-client <https://github.com/The-Politico/django-crosswalk-client>`_ is a tiny library to make interacting with the API easy to do inline in your code.
 
 
 
