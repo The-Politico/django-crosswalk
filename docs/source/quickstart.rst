@@ -45,6 +45,12 @@ Installation
 
   $ python manage.py migrate crosswalk
 
-5. Open the admin and create your first API users in the app.
+5. Open Django's admin and create your first API users.
 
-6. Check out the concepts and using the client to interact with your new database.
+6. Install the client.
+
+::
+
+  $ pip install django-crosswalk-client
+
+7. Read through the rest of these docs to see how to interact with your database.

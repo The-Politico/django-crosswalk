@@ -1,13 +1,6 @@
 Concepts
 ========
 
-Django-crosswalk is a simple library to help you create and manage databases of arbitrary entities.
-
-We use a few simple record linkage techniques to help you easily model and query the entities in your database and maintain records of known aliases.
-
-First, we introduce blocking indexes, which help break your database apart into blocks of likely matches that improve query precision. Second, we allow you to make fuzzy queries against an arbitrary attribute of an entity to find the closest match within a block.
-
--------------------------------
 
 Domains
 -------

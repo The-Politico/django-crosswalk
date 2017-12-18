@@ -6,12 +6,12 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-crosswalk',
-    version='0.0.0',
+    version='0.0.1',
     packages=find_packages(exclude=('example',)),
     include_package_data=True,
     license='MIT',
     url="https://github.com/The-Politico/django-crosswalk",
-    description='',
+    description='Build and query databases of arbitrary entities.',
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
@@ -20,8 +20,8 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],

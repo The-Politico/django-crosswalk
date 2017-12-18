@@ -3,7 +3,7 @@ Using the client
 
 The django-crosswalk client lets you interact with your crosswalk database much like you would any standard library, albeit through an API.
 
-Generally, we recommend you **don't** interact with django-crosswalk's API directly, but use the methods built into the client, which have more verbose validation and error messages and are fully tested. We aren't even documenting the API endpoints explicitly.
+Generally, we recommend you **don't** interact with django-crosswalk's API directly, but use the methods built into the client, which have more verbose validation and error messages and are tested.
 
 -------------------------------
 
@@ -31,9 +31,9 @@ Create a client instance by passing your API token and the URL to the root of yo
 
   from crosswalk_client import Client
 
-  # Your API token
+  # Your API token, created in Django admin
   token = '<TOKEN>'
-  # Address for root of API
+  # Address of django-crosswalk's API
   service = 'https://mysite.com/crosswalk/api/'
 
   client = Client(token, service)
@@ -54,7 +54,7 @@ You can also instantiate a client with defaults.
 Set the default domain
 ''''''''''''''''''''''
 
-In order to query, create or edit entities, you must include a domain. You can set a default anytime using a Domain object slug:
+In order to query, create or edit entities, you must specify a domain. You can set a default anytime using a Domain object slug:
 
 .. code-block:: python
 
@@ -307,7 +307,14 @@ Create an alias if an entity above a certain match score threshold is found or c
 
 .. note::
 
-  If the best match for your query is above the treshold and is itself an alias of another entity, this method will return the canonical entity.
+  If the best match for your query is an alias of another entity, this method will return the canonical entity with :code:`entity.aliased = True`. To ignore aliased entities, set :code:`return_canonical=False` and the method will return the best match for your query, regardless of whether it is an alias for another entity.
+
+  .. code-block:: python
+
+    client.alias_or_create(
+      {"name": "Missouri"},
+      return_canonical=False
+    )
 
 
 Update an entity by ID
