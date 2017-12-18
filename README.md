@@ -2,7 +2,6 @@
 
 # django-crosswalk
 
-Under construction.
+Build and query databases of arbitrary entities.
 
-
-<img src="https://is.alicdn.com/img/pb/664/752/046/1046752664_254.jpg" width="200"/>
+See the docs on [readthedocs](http://django-crosswalk.readthedocs.io/en/latest/).
