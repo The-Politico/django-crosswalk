@@ -161,7 +161,7 @@ Create a list of shallow dictionaries for each entity you'd like to create. This
 
 .. note::
 
-  Django-chartwerk will create UUIDs for any entities, which are automatically serialized and deserialized by the client.
+  Django-chartwerk will create UUIDs for any new entities, which are automatically serialized and deserialized by the client.
 
   You can also create entities with your own UUIDs. For example:
 
@@ -178,7 +178,7 @@ Create a list of shallow dictionaries for each entity you'd like to create. This
         }
     ]
 
-    entity = client.bulk_create(entities, domain='states')[0]
+    entity = client.bulk_create(entities)[0]
 
     entity.uuid == uuid
     # True
