@@ -24,7 +24,7 @@ What can you do with it?
 
 Create complex databases of entities and their aliases in django-crosswalk. Then use fuzzy queries to help resolve entities' identities when scraping data from the web or using other unstandardized sources.
 
-The client library lets you easily integrate django-crosswalk's record linkage techniques in your code. Use it like a middleware between your original data and your destination database. Scrape some entities from a website, then query your crosswalk tables and normalize your IDs before saving to your db.
+The client library lets you easily integrate django-crosswalk's record linkage techniques in your code. Use it like a middleware between your raw data and your destination database. Scrape some entities from a website, then query your crosswalk tables and normalize your IDs before saving to your db.
 
 Django-crosswalk will give your entities a canonical ID you can use across databases or will persist your own and return it whenever you query an alias.
 
