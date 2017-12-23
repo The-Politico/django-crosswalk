@@ -7,7 +7,7 @@ Some methods of deduplication within large datasets can be very complex, for whi
 
 Django-crosswalk is an entity service that provides a few basic, but highly extensible tools to resolve entity IDs and create linked records of known aliases.
 
-We use it to standardize IDs across datasets, to create a master crosswalks of all known aliases and as a reference library for entity metadata, augmenting libraries like `us <https://pypi.python.org/pypi/us>`_.
+We use it to standardize IDs across datasets, to create a master crosswalk of all known aliases and as a reference library for entity metadata, augmenting libraries like `us <https://pypi.python.org/pypi/us>`_.
 
 
 What's in it?
