@@ -3,7 +3,7 @@ Using the client
 
 The django-crosswalk client lets you interact with your crosswalk database much like you would any standard library, albeit through an API.
 
-Generally, we recommend you **don't** interact with django-crosswalk's API directly, but use the methods built into the client, which have more verbose validation and error messages and are well tested.
+Generally, we **don't** recommend you interact with django-crosswalk's API directly. Instead, use the methods built into the client, which have more verbose validation and error messages and are well tested.
 
 -------------------------------
 
@@ -159,6 +159,31 @@ Create a list of shallow dictionaries for each entity you'd like to create. This
 
     entities = client.bulk_create(states, domain='states')
 
+.. note::
+
+  Django-chartwerk will create UUIDs for any entities, which are automatically serialized and deserialized by the client.
+
+  You can also create entities with your own UUIDs. For example:
+
+  .. code-block:: python
+
+    from uuid import uuid4()
+
+    uuid = uuid4()
+
+    entities = [
+        {
+          "uuid": uuid,
+          "name": "some entity",
+        }
+    ]
+
+    entity = client.bulk_create(entities, domain='states')[0]
+
+    entity.uuid == uuid
+    # True
+
+
 
 Get entities in a domain
 ''''''''''''''''''''''''
@@ -265,7 +290,7 @@ If a sufficient match is not found, you can pass a dictionary of attributes to c
 
     import uuid
 
-    id = uuid.uuid4().hex
+    id = uuid.uuid4()
 
     entity = client.best_match_or_create(
         {"name": "Xanadu"},

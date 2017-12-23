@@ -1,12 +1,11 @@
 import uuid
 
-from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
-from django.db import models
-
 from crosswalk.models import Domain
 from crosswalk.validators import (validate_no_reserved_keys,
                                   validate_shallow_dict)
+from django.contrib.auth.models import User
+from django.contrib.postgres.fields import JSONField
+from django.db import models
 
 
 class Entity(models.Model):
