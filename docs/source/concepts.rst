@@ -9,7 +9,7 @@ A domain is an arbitrary category your entities belong to. For example, you may 
 
 Every entity you create **must belong** to one domain.
 
-Domains may be nested with a parent-child heirarchy. For example, :code:`states` may be a parent to :code:`counties`.
+Domains may be nested with a parent-child hierarchy. For example, :code:`states` may be a parent to :code:`counties`.
 
 A domain is the highest level blocking index in django-crosswalk. These indexes help greatly increase the precision of queries. For example, restricting your query to our :code:`states` domain makes sure you won't match Texas County, Missouri when you mean to match Texas state.
 
@@ -74,6 +74,28 @@ After you've created them, you can use attributes to create additional blocking 
 Scorers
 -------
 
-Scorers are functions that compare strings and are used when querying entities. Django-crosswalk comes with four scorers, all from the `fuzzywuzzy <https://github.com/seatgeek/fuzzywuzzy>`_ package.
+Scorers are functions that compare strings and are used when querying entities. Django-crosswalk comes with four scorers, all using :code:`process.exctractOne` from the `fuzzywuzzy <https://github.com/seatgeek/fuzzywuzzy>`_ package:
 
-All scorer functions have the same signature. They must accept a query string (:code:`query_value`) and a list of strings to compare (:code:`block_values`). They must return a tuple that contains a matched string from :code:`block_values` and a normalized match score.
+- :code:`fuzzywuzzy.default_process`
+
+  - Uses fuzzywuzzy's simple ratio scorer.
+
+- :code:`fuzzywuzzy.partial_ratio_process`
+
+  - Uses fuzzywuzzy's partial ratio scorer.
+
+- :code:`fuzzywuzzy.token_sort_ratio_process`
+
+  - Uses fuzzywuzzy's token sort ratio scorer.
+
+- :code:`fuzzywuzzy.token_set_ratio_process`
+
+  - Uses fuzzywuzzy's token set ratio scorer.
+
+In django-crosswalk, all scorer functions have the same signature. They must accept a query string (:code:`query_value`) and a list of strings to compare (:code:`block_values`). They must return a tuple that contains a matched string from :code:`block_values` and a normalized match score.
+
+.. code-block:: python
+
+  def your_custom_scorer(query_value, block_values):
+      match, score = somefunc(query_value, block_values)
+      return (match, score)

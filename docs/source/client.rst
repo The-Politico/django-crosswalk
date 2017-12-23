@@ -3,7 +3,7 @@ Using the client
 
 The django-crosswalk client lets you interact with your crosswalk database much like you would any standard library, albeit through an API.
 
-Generally, we recommend you **don't** interact with django-crosswalk's API directly, but use the methods built into the client, which have more verbose validation and error messages and are tested.
+Generally, we recommend you **don't** interact with django-crosswalk's API directly, but use the methods built into the client, which have more verbose validation and error messages and are well tested.
 
 -------------------------------
 
@@ -120,7 +120,9 @@ Get a domain
 .. code-block:: python
 
     domain = client.get_domain("states")
-    assert domain.slug == "states"
+
+    domain.slug
+    # states
 
 Get all domains
 '''''''''''''''
@@ -368,9 +370,9 @@ Delete an entity by ID
 .. code-block:: python
 
     entity = client.best_match({"name": "New York"})
-    response = client.delete_by_id(entity.uuid)
+    deleted = client.delete_by_id(entity.uuid)
 
-    response
+    deleted
     # True
 
 
@@ -379,14 +381,14 @@ Delete a matched entity
 
 .. code-block:: python
 
-    response = client.delete_match({"name": "Xanadu"})
+    deleted = client.delete_match({"name": "Xanadu"})
 
-    response
+    deleted
     # True
 
-    response = client.delete_match({"name": "Narnia", "postal_code": "NA"})
+    deleted = client.delete_match({"name": "Narnia", "postal_code": "NA"})
 
-    response
+    deleted
     # True
 
 .. note::

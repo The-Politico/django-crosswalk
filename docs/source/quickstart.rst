@@ -45,7 +45,13 @@ Installation
 
   $ python manage.py migrate crosswalk
 
-5. Open Django's admin and create your first API users.
+5. Open Django's admin and create your first API users on the crosswalk :code:`ApiUser` model.
+
+.. image:: images/admin.png
+  :width: 350px
+  :align: center
+
+
 
 6. Install the client.
 
@@ -53,4 +59,4 @@ Installation
 
   $ pip install django-crosswalk-client
 
-7. Read through the rest of these docs to see how to interact with your database.
+7. Read through the rest of these docs to see how to interact with your database using the client.
