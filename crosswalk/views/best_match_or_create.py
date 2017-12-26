@@ -1,11 +1,10 @@
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import status
-from rest_framework.response import Response
-
 from crosswalk.authentication import AuthenticatedView
 from crosswalk.models import Domain, Entity
 from crosswalk.serializers import EntitySerializer
 from crosswalk.utils import import_class
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework import status
+from rest_framework.response import Response
 
 
 class BestMatchOrCreate(AuthenticatedView):
@@ -26,7 +25,14 @@ class BestMatchOrCreate(AuthenticatedView):
         threshold = data.get('threshold')
         return_canonical = data.get('return_canonical', True)
         scorer_class = data.get('scorer', 'fuzzywuzzy.default_process')
-        scorer = import_class('crosswalk.scorers.{}'.format(scorer_class))
+
+        try:
+            scorer = import_class('crosswalk.scorers.{}'.format(scorer_class))
+        except ImportError:
+            return Response(
+                "Invalid scorer.",
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             domain = Domain.objects.get(slug=domain)
