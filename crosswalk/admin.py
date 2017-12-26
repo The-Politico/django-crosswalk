@@ -1,12 +1,10 @@
-from crosswalk.models import ApiUser, Domain, Entity
+from crosswalk.models import ApiUser
 from django.contrib import admin
 
 
 class ApiUserAdmin(admin.ModelAdmin):
-    readonly_fields = ('token',)
-    fields = ('user', 'token',)
+    fields = ('user',)
+    list_display = ('user', 'token',)
 
 
 admin.site.register(ApiUser, ApiUserAdmin)
-admin.site.register(Domain)
-admin.site.register(Entity)
