@@ -308,7 +308,7 @@ If a sufficient match is not found, you can pass a dictionary of attributes to c
 Create an alias or create a new entity
 ''''''''''''''''''''''''''''''''''''''
 
-Create an alias if an entity above a certain match score threshold is found or create a new entity.
+Create an alias if an entity above a certain match score threshold is found or create a new entity. Method returns the aliased entity.
 
 .. code-block:: python
 
@@ -342,6 +342,16 @@ Create an alias if an entity above a certain match score threshold is found or c
       {"name": "Missouri"},
       return_canonical=False
     )
+
+
+Get an entity by ID
+'''''''''''''''''''
+
+Use the entity's UUID to retrieve it.
+
+.. code-block:: python
+
+  entity = client.get_entity(uuid)
 
 
 Update an entity by ID
