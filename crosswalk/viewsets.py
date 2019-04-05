@@ -11,6 +11,7 @@ from .serializers import DomainSerializer, EntitySerializer
 class AuthenticatedViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
+    paginator = None
 
 
 class DomainViewSet(AuthenticatedViewSet):
