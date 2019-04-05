@@ -1,23 +1,29 @@
-from crosswalk.authentication import TokenAuthentication
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from crosswalk.authentication import TokenAuthentication
 
 from .models import Domain, Entity
 from .serializers import DomainSerializer, EntitySerializer
 
 
-class DomainViewSet(viewsets.ModelViewSet):
+class AuthenticatedViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+
+class DomainViewSet(AuthenticatedViewSet):
     serializer_class = DomainSerializer
     queryset = Domain.objects.all()
-    lookup_field = 'slug'
+    lookup_field = "slug"
 
 
-class EntityDomainViewSet(viewsets.ModelViewSet):
+class EntityDomainViewSet(AuthenticatedViewSet):
     serializer_class = EntitySerializer
 
     def get_queryset(self):
-        domain = self.kwargs['domain']
+        domain = self.kwargs["domain"]
         return Entity.objects.filter(domain__name=domain)
 
     def list(self, request, domain):
@@ -28,11 +34,9 @@ class EntityDomainViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class EntityViewSet(viewsets.ModelViewSet):
+class EntityViewSet(AuthenticatedViewSet):
     serializer_class = EntitySerializer
     queryset = Entity.objects.all()
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (TokenAuthentication,)
 
     def partial_update(self, request, pk=None):
         """
@@ -41,22 +45,18 @@ class EntityViewSet(viewsets.ModelViewSet):
         instance = self.queryset.get(pk=pk)
         new_attributes = {
             **instance.attributes,
-            **request.data.get('attributes', {})
+            **request.data.get("attributes", {}),
         }
         serializer = self.serializer_class(
             instance,
             data={
                 "attributes": new_attributes,
-                "alias_for": request.data.get(
-                    "alias_for",
-                    instance.alias_for
-                ),
+                "alias_for": request.data.get("alias_for", instance.alias_for),
                 "superseded_by": request.data.get(
-                    "superseded_by",
-                    instance.superseded_by
-                )
+                    "superseded_by", instance.superseded_by
+                ),
             },
-            partial=True
+            partial=True,
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
