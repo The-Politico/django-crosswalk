@@ -32,9 +32,9 @@ Create a client instance by passing your API token and the URL to the root of yo
   from crosswalk_client import Client
 
   # Your API token, created in Django admin
-  token = '<TOKEN>'
+  token = "<TOKEN>"
   # Address of django-crosswalk's API
-  service = 'https://mysite.com/crosswalk/api/'
+  service = "https://mysite.com/crosswalk/api/"
 
   client = Client(token, service)
 
@@ -46,7 +46,7 @@ You can also instantiate a client with defaults.
       token,
       service,
       domain=None, # default
-      scorer='fuzzywuzzy.default_process', # default
+      scorer="fuzzywuzzy.default_process", # default
       threshold=80, # default
   )
 
@@ -58,7 +58,10 @@ In order to query, create or edit entities, you must specify a domain. You can s
 
 .. code-block:: python
 
-  client.set_domain('states')
+  # Using domain instance
+  client.set_domain(states)
+  # ... or a domain's slug
+  client.set_domain("states")
 
 
 Set the default scorer
@@ -68,7 +71,7 @@ The string module path to a scorer function in :code:`crosswalk.scorers`.
 
 .. code-block:: python
 
-  client.set_scorer('fuzzywuzzy.token_sort_ratio_process')
+  client.set_scorer("fuzzywuzzy.token_sort_ratio_process")
 
 
 Set the default threshold
@@ -91,27 +94,15 @@ Create a domain
 
 .. code-block:: python
 
-    domain = client.create_domain('states')
+    states = client.create_domain("U.S. states")
 
-    domain.name
-    # states
+    states.name == "U.S. states"
+    states.slug == "u-s-states" # Name of domain is always slugified!
 
-
-Update a domain
-'''''''''''''''
-
-.. code-block:: python
-
-    # Use the domain's slug!
-    client.update_domain('states', {"parent": "countries"})
-
-
-Delete a domain
-'''''''''''''''
-
-.. code-block:: python
-
-    client.delete_domain('states')
+    # Create with a parent domain instance
+    client.create_domain("counties", parent=states)
+    # ... or a parent domain's slug
+    client.create_domain("cities", parent="u-s-states")
 
 
 Get a domain
@@ -119,20 +110,46 @@ Get a domain
 
 .. code-block:: python
 
-    domain = client.get_domain("states")
+    # Use a domain's slug
+    states = client.get_domain("states")
 
-    domain.slug
-    # states
+    states.slug == "states"
+
 
 Get all domains
 '''''''''''''''
 
 .. code-block:: python
 
-    domains = client.get_domains()
+    states = client.get_domains()[0]
 
-    domains[0].slug
-    # states
+    states.slug == "states"
+
+    # Filter domains by a parent domain instance
+    client.get_domains(parent=states)
+    # or parent domain's slug
+    client.get_domains(parent="states")
+
+
+Update a domain
+'''''''''''''''
+
+.. code-block:: python
+
+    # Using the domain's slug
+    states = client.update_domain("states", {"parent": "countries"})
+    # ... or the domain instance
+    client.update_domain(states, {"parent": "country"})
+
+
+Delete a domain
+'''''''''''''''
+
+.. code-block:: python
+
+    # Using domain's slug
+    client.delete_domain('states')
+
 
 -------------------------------
 
@@ -161,7 +178,7 @@ Create a list of shallow dictionaries for each entity you'd like to create. This
 
 .. note::
 
-  Django-chartwerk will create UUIDs for any new entities, which are automatically serialized and deserialized by the client.
+  Django-crosswalk will create UUIDs for any new entities, which are automatically serialized and deserialized by the client.
 
   You can also create entities with your own UUIDs. For example:
 

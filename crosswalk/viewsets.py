@@ -16,8 +16,14 @@ class AuthenticatedViewSet(viewsets.ModelViewSet):
 
 class DomainViewSet(AuthenticatedViewSet):
     serializer_class = DomainSerializer
-    queryset = Domain.objects.all()
     lookup_field = "slug"
+
+    def get_queryset(self):
+        queryset = Domain.objects.all()
+        parent = self.request.query_params.get("parent", None)
+        if parent:
+            queryset = queryset.filter(parent__slug=parent)
+        return queryset
 
 
 class EntityDomainViewSet(AuthenticatedViewSet):
