@@ -2,7 +2,9 @@
 
 # django-crosswalk
 
-Build and query databases of arbitrary entities.
+[![PyPI version](https://badge.fury.io/py/django-crosswalk.svg)](https://badge.fury.io/py/django-crosswalk)
+
+Build and query a database of arbitrary entities. Construct a complex crosswalk between unstandardized data and the standardized records you want.
 
 [Read the docs](http://django-crosswalk.readthedocs.io/en/latest/)!
 
