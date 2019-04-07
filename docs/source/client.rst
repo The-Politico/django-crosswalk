@@ -266,7 +266,17 @@ Pass a dictionary of block attributes to filter your entities before querying wi
 Find a match or create a new entity
 '''''''''''''''''''''''''''''''''''
 
-You can create a new entity if one isn't found above a match threshold returned by your scorer.
+You can create a new entity if a matched one isn't found.
+
+.. code-block:: python
+
+  entity = client.match_or_create({"name": "Narnia"})
+
+  entity.created
+  # True
+
+
+Or use a fuzzy matcher to find the *best match*. If one isn't found above a match threshold returned by your scorer, create a new entity.
 
 .. code-block:: python
 

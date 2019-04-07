@@ -8,6 +8,7 @@ from .views import (
     BulkCreate,
     ClientCheck,
     DeleteMatch,
+    MatchOrCreate,
     UpdateMatch,
 )
 from .viewsets import DomainViewSet, EntityDomainViewSet, EntityViewSet
@@ -52,6 +53,10 @@ urlpatterns = [
     path(
         "api/domains/<slug:domain>/entities/best-match-or-create/",
         BestMatchOrCreate.as_view(),
+    ),
+    path(
+        "api/domains/<slug:domain>/entities/match-or-create/",
+        MatchOrCreate.as_view(),
     ),
     path(
         "api/domains/<slug:domain>/entities/delete-match/",

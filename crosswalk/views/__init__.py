@@ -1,7 +1,9 @@
-from .client_check import ClientCheck  # noqa
-from .bulk_create import BulkCreate  # noqa
-from .best_match import BestMatch  # noqa
-from .best_match_or_create import BestMatchOrCreate  # noqa
-from .delete_match import DeleteMatch  # noqa
-from .alias_or_create import AliasOrCreate  # noqa
-from .update_match import UpdateMatch  # noqa
+# flake8: noqa
+from .alias_or_create import AliasOrCreate
+from .best_match_or_create import BestMatchOrCreate
+from .best_match import BestMatch
+from .bulk_create import BulkCreate
+from .client_check import ClientCheck
+from .delete_match import DeleteMatch
+from .match_or_create import MatchOrCreate
+from .update_match import UpdateMatch
