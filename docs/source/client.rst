@@ -33,6 +33,7 @@ Create a client instance by passing your API token and the URL to the root of yo
 
   # Your API token, created in Django admin
   token = "<TOKEN>"
+
   # Address of django-crosswalk's API
   service = "https://mysite.com/crosswalk/api/"
 
@@ -60,6 +61,7 @@ In order to query, create or edit entities, you must specify a domain. You can s
 
   # Using domain instance
   client.set_domain(states)
+
   # ... or a domain's slug
   client.set_domain("states")
 
@@ -77,7 +79,7 @@ The string module path to a scorer function in :code:`crosswalk.scorers`.
 Set the default threshold
 '''''''''''''''''''''''''
 
-The default threshold is used when creating entities based on a match score. For all default scorers, the match score should be an integer between 0 - 100.
+The default threshold is used when creating entities based on a match score. For all scorers, the match score should be an integer between 0 - 100.
 
 .. code-block:: python
 
@@ -101,6 +103,7 @@ Create a domain
 
     # Create with a parent domain instance
     client.create_domain("counties", parent=states)
+
     # ... or a parent domain's slug
     client.create_domain("cities", parent="u-s-states")
 
@@ -127,7 +130,8 @@ Get all domains
 
     # Filter domains by a parent domain instance
     client.get_domains(parent=states)
-    # or parent domain's slug
+
+    # ... or parent domain's slug
     client.get_domains(parent="u-s-states")
 
 
@@ -138,6 +142,7 @@ Update a domain
 
     # Using the domain's slug
     states = client.update_domain("u-s-states", {"parent": "countries"})
+
     # ... or the domain instance
     client.update_domain(states, {"parent": "country"})
 
@@ -149,6 +154,7 @@ Delete a domain
 
     # Using domain's slug
     client.delete_domain('u-s-states')
+
     # ... or the domain instance
     client.delete_domain(states)
 
@@ -202,7 +208,9 @@ Create a list of shallow dictionaries for each entity you'd like to create. This
     entity.uuid == uuid
     # True
 
+.. warning::
 
+    You can't re-run a bulk create. If your script needs the equivalent of :code:`get_or_create` or :code:`update_or_create`, use the :code:`match` or :code:`match_or_create` methods and then update if needed it using the built-in entity :code:`update` method.
 
 Get entities in a domain
 ''''''''''''''''''''''''
@@ -227,33 +235,41 @@ Pass a dictionary of block attributes to filter entities in the domain.
     # Kansas
 
 
-Find the entity that best matches a fuzzy query
-'''''''''''''''''''''''''''''''''''''''''''''''
+Find an entity
+''''''''''''''
 
-Pass a dictionary with the attribute you'd like to query with a fuzzy string.
+Pass a query dictionary to find an entity that *exactly* matches.
+
+.. code-block:: python
+
+    client.match({"name": "Missouri"}, domain=states)
+
+    # Pass block attributes to filter possible matches
+    client.match(
+      {"name": "Texas"},
+      block_attrs={"postal_code": "TX"},
+      domain=states
+    )
+
+You can also fuzzy match on your query dictionary and return the entity that *best* matches.
 
 .. code-block:: python
 
     entity = client.best_match({"name": "Kalifornia"}, domain=states)
 
-    entity.name
-    # California
-
-Pass a dictionary of block attributes to filter your entities before querying with a fuzzy string.
-
-.. code-block:: python
-
+    # Pass block attributes to filter possible matches
     entity = client.best_match(
-      {"name": "Arkansas"},
-      block_attrs={"postal_code": "KS"}
+      {"name": "Kalifornia"},
+      block_attrs={"postal_code": "CA"},
+      domain=states
     )
 
-    entity.name
-    # Kansas
+    entity.name == "California"
+
 
 .. note::
 
-  If the best match for your query is an alias of another entity, this method will return the canonical entity with :code:`entity.aliased = True`. To ignore aliased entities, set :code:`return_canonical=False` and the method will return the best match for your query, regardless of whether it is an alias for another entity.
+  If the match for your query is an alias of another entity, this method will return the canonical entity with :code:`entity.aliased = True`. To ignore aliased entities, set :code:`return_canonical=False` and the method will return the best match for your query, regardless of whether it is an alias for another entity.
 
   .. code-block:: python
 
@@ -266,17 +282,18 @@ Pass a dictionary of block attributes to filter your entities before querying wi
 Find a match or create a new entity
 '''''''''''''''''''''''''''''''''''
 
-You can create a new entity if a matched one isn't found.
+You can create a new entity if an *exact* match isn't found.
 
 .. code-block:: python
 
   entity = client.match_or_create({"name": "Narnia"})
 
+
   entity.created
   # True
 
 
-Or use a fuzzy matcher to find the *best match*. If one isn't found above a match threshold returned by your scorer, create a new entity.
+Or use a fuzzy matcher to find the *best* match. If one isn't found above a match threshold returned by your scorer, create a new entity.
 
 .. code-block:: python
 
@@ -285,7 +302,7 @@ Or use a fuzzy matcher to find the *best match*. If one isn't found above a matc
   entity.created
   # True
 
-  # Or set a custom threshold instead of using the default
+  # Set a custom threshold for the match scorer instead of using the default
   entity = client.best_match_or_create(
       {"name": "Narnia"},
       threshold=80,
@@ -307,6 +324,11 @@ Pass a dictionary of block attributes to filter match candidates.
 
 .. code-block:: python
 
+    entity = client.match_or_create(
+        {"name": "Narnia"},
+        block_attrs={"postal_code": "NA"},
+    )
+
     entity = client.best_match_or_create(
         {"name": "Narnia"},
         block_attrs={"postal_code": "NA"},
@@ -320,6 +342,11 @@ If a sufficient match is not found, you can pass a dictionary of attributes to c
     import uuid
 
     id = uuid.uuid4()
+
+    entity = client.match_or_create(
+        {"name": "Xanadu"},
+        create_attrs={"uuid": id},
+    )
 
     entity = client.best_match_or_create(
         {"name": "Xanadu"},
@@ -424,7 +451,7 @@ Update a matched entity
 
 .. note::
 
-    If your block attributes return more than one matched entity to be updated, an :code:`UnspecificUpdateRequestError` will be raised and no entities will be updated.
+    If your block attributes return more than one matched entity to be updated, an :code:`UnspecificQueryError` will be raised and no entities will be updated.
 
 
 
@@ -433,7 +460,7 @@ Delete an entity by ID
 
 .. code-block:: python
 
-    entity = client.best_match({"name": "New York"})
+    entity = client.match({"name": "New York"})
     deleted = client.delete_by_id(entity.uuid)
 
     deleted
@@ -457,7 +484,7 @@ Delete a matched entity
 
 .. note::
 
-    If your block attributes return more than one matched entity to be deleted, an :code:`UnspecificDeleteRequestError` will be raised and no entities will be deleted.
+    If your block attributes return more than one matched entity to be deleted, an :code:`UnspecificQueryError` will be raised and no entities will be deleted.
 
 ----------------------------
 

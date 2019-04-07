@@ -6,4 +6,5 @@ from .bulk_create import BulkCreate
 from .client_check import ClientCheck
 from .delete_match import DeleteMatch
 from .match_or_create import MatchOrCreate
+from .match import Match
 from .update_match import UpdateMatch

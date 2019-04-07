@@ -9,6 +9,7 @@ from .views import (
     ClientCheck,
     DeleteMatch,
     MatchOrCreate,
+    Match,
     UpdateMatch,
 )
 from .viewsets import DomainViewSet, EntityDomainViewSet, EntityViewSet
@@ -54,6 +55,7 @@ urlpatterns = [
         "api/domains/<slug:domain>/entities/best-match-or-create/",
         BestMatchOrCreate.as_view(),
     ),
+    path("api/domains/<slug:domain>/entities/match/", Match.as_view()),
     path(
         "api/domains/<slug:domain>/entities/match-or-create/",
         MatchOrCreate.as_view(),
