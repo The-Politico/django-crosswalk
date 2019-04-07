@@ -1,8 +1,15 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import (AliasOrCreate, BestMatch, BestMatchOrCreate, BulkCreate,
-                    ClientCheck, DeleteMatch, UpdateMatch)
+from .views import (
+    AliasOrCreate,
+    BestMatch,
+    BestMatchOrCreate,
+    BulkCreate,
+    ClientCheck,
+    DeleteMatch,
+    UpdateMatch,
+)
 from .viewsets import DomainViewSet, EntityDomainViewSet, EntityViewSet
 
 router = routers.DefaultRouter()

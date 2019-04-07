@@ -8,7 +8,6 @@ from rest_framework.response import Response
 
 
 class AliasOrCreate(AuthenticatedView):
-
     def post(self, request, domain):
         """
         Create an alias if an entity is found above a certain match threshold
@@ -16,28 +15,26 @@ class AliasOrCreate(AuthenticatedView):
         """
         user = request.user
         data = request.data.copy()
-        query_field = data.get('query_field')
-        query_value = data.get('query_value')
-        block_attrs = data.get('block_attrs', {})
-        create_attrs = data.get('create_attrs', {})
-        return_canonical = data.get('return_canonical', True)
-        threshold = data.get('threshold')
-        scorer_class = data.get('scorer', 'fuzzywuzzy.default_process')
+        query_field = data.get("query_field")
+        query_value = data.get("query_value")
+        block_attrs = data.get("block_attrs", {})
+        create_attrs = data.get("create_attrs", {})
+        return_canonical = data.get("return_canonical", True)
+        threshold = data.get("threshold")
+        scorer_class = data.get("scorer", "fuzzywuzzy.default_process")
 
         try:
-            scorer = import_class('crosswalk.scorers.{}'.format(scorer_class))
+            scorer = import_class("crosswalk.scorers.{}".format(scorer_class))
         except ImportError:
             return Response(
-                "Invalid scorer.",
-                status=status.HTTP_400_BAD_REQUEST
+                "Invalid scorer.", status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
             domain = Domain.objects.get(slug=domain)
         except ObjectDoesNotExist:
             return Response(
-                "Domain not found.",
-                status=status.HTTP_404_NOT_FOUND
+                "Domain not found.", status=status.HTTP_404_NOT_FOUND
             )
 
         # Find the best match for a query
@@ -48,13 +45,13 @@ class AliasOrCreate(AuthenticatedView):
         match, score = scorer(query_value, entity_values)
 
         entities = entities.filter(
-            **{'attributes__{}'.format(query_field): match}
+            **{"attributes__{}".format(query_field): match}
         )
 
         if entities.count() > 1:
             return Response(
                 "More than one alias candiate for entity.",
-                status=status.HTTP_403_FORBIDDEN
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         entity = entities.first()
@@ -62,13 +59,13 @@ class AliasOrCreate(AuthenticatedView):
         attributes = {
             **{query_field: query_value},
             **block_attrs,
-            **create_attrs
+            **create_attrs,
         }
 
         if entity.attributes == attributes:
             return Response(
                 "Entity appears to already exist.",
-                status=status.HTTP_409_CONFLICT
+                status=status.HTTP_409_CONFLICT,
             )
 
         if score > threshold:
@@ -77,7 +74,7 @@ class AliasOrCreate(AuthenticatedView):
                 attributes=attributes,
                 alias_for=entity,
                 created_by=user,
-                domain=domain
+                domain=domain,
             )
             alias.save()
             if return_canonical:
@@ -86,15 +83,16 @@ class AliasOrCreate(AuthenticatedView):
         else:
             aliased = False
             entity = Entity(
-                attributes=attributes,
-                created_by=user,
-                domain=domain
+                attributes=attributes, created_by=user, domain=domain
             )
             entity.save()
 
-        return Response({
-            "entity": EntitySerializer(entity).data,
-            "created": True,
-            "aliased": aliased,
-            "match_score": score,
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "entity": EntitySerializer(entity).data,
+                "created": True,
+                "aliased": aliased,
+                "match_score": score,
+            },
+            status=status.HTTP_200_OK,
+        )

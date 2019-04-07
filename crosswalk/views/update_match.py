@@ -10,7 +10,6 @@ from crosswalk.validators import full_validation
 
 
 class UpdateMatch(AuthenticatedView):
-
     def post(self, request, domain):
         """
         POST searches for an entity based on criteria. If only one entity is
@@ -22,28 +21,27 @@ class UpdateMatch(AuthenticatedView):
             domain = Domain.objects.get(slug=domain)
         except ObjectDoesNotExist:
             return Response(
-                "Domain not found.",
-                status=status.HTTP_404_NOT_FOUND
+                "Domain not found.", status=status.HTTP_404_NOT_FOUND
             )
 
         entities = Entity.objects.filter(domain=domain)
         entities = entities.filter(
-            attributes__contains=data.get('block_attrs', {}))
+            attributes__contains=data.get("block_attrs", {})
+        )
 
         if entities.count() == 0:
             return Response(
-                "Entity not found.",
-                status=status.HTTP_404_NOT_FOUND
+                "Entity not found.", status=status.HTTP_404_NOT_FOUND
             )
 
         elif entities.count() > 1:
             return Response(
                 "Found more than one entity. Be more specific?",
-                status=status.HTTP_403_FORBIDDEN
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         entity = entities.first()
-        update_attrs = data.get('update_attrs', {})
+        update_attrs = data.get("update_attrs", {})
 
         # validate data
         try:
@@ -51,16 +49,13 @@ class UpdateMatch(AuthenticatedView):
         except (NestedAttributesError, ReservedKeyError):
             return Response(
                 "Update data could not be validated.",
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-        entity.attributes = {
-            **entity.attributes,
-            **update_attrs,
-        }
+        entity.attributes = {**entity.attributes, **update_attrs}
         entity.save()
 
         return Response(
             {"entity": EntitySerializer(entities.first()).data},
-            status=status.HTTP_200_OK
+            status=status.HTTP_200_OK,
         )

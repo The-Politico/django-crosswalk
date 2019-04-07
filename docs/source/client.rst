@@ -3,7 +3,7 @@ Using the client
 
 The django-crosswalk client lets you interact with your crosswalk database much like you would any standard library, albeit through an API.
 
-Generally, we **don't** recommend you interact with django-crosswalk's API directly. Instead, use the methods built into the client, which have more verbose validation and error messages and are well tested.
+Generally, we **do not** recommend interacting with django-crosswalk's API directly. Instead, use the methods built into the client, which have more verbose validation and error messages and are well tested.
 
 -------------------------------
 
@@ -54,7 +54,7 @@ You can also instantiate a client with defaults.
 Set the default domain
 ''''''''''''''''''''''
 
-In order to query, create or edit entities, you must specify a domain. You can set a default anytime using a Domain object slug:
+In order to query, create or edit entities, you must specify a domain. You can set a default anytime:
 
 .. code-block:: python
 
@@ -111,9 +111,9 @@ Get a domain
 .. code-block:: python
 
     # Use a domain's slug
-    states = client.get_domain("states")
+    states = client.get_domain("u-s-states")
 
-    states.slug == "states"
+    states.name == "U.S. states"
 
 
 Get all domains
@@ -123,12 +123,12 @@ Get all domains
 
     states = client.get_domains()[0]
 
-    states.slug == "states"
+    states.slug == "u-s-states"
 
     # Filter domains by a parent domain instance
     client.get_domains(parent=states)
     # or parent domain's slug
-    client.get_domains(parent="states")
+    client.get_domains(parent="u-s-states")
 
 
 Update a domain
@@ -137,7 +137,7 @@ Update a domain
 .. code-block:: python
 
     # Using the domain's slug
-    states = client.update_domain("states", {"parent": "countries"})
+    states = client.update_domain("u-s-states", {"parent": "countries"})
     # ... or the domain instance
     client.update_domain(states, {"parent": "country"})
 
@@ -148,7 +148,9 @@ Delete a domain
 .. code-block:: python
 
     # Using domain's slug
-    client.delete_domain('states')
+    client.delete_domain('u-s-states')
+    # ... or the domain instance
+    client.delete_domain(states)
 
 
 -------------------------------
@@ -166,7 +168,7 @@ Create a list of shallow dictionaries for each entity you'd like to create. This
 
     import us
 
-    states = [
+    state_entities = [
         {
             "name": state.name,
             "fips": state.fips,
@@ -174,7 +176,7 @@ Create a list of shallow dictionaries for each entity you'd like to create. This
         } for state in us.states.STATES
     ]
 
-    entities = client.bulk_create(states, domain='states')
+    entities = client.bulk_create(state_entities, domain=states)
 
 .. note::
 
@@ -207,7 +209,7 @@ Get entities in a domain
 
 .. code-block:: python
 
-    entities = client.get_entities(domain="states")
+    entities = client.get_entities(domain=states)
 
     entities[0].name
     # Alabama
@@ -217,7 +219,7 @@ Pass a dictionary of block attributes to filter entities in the domain.
 .. code-block:: python
 
     entities = client.get_entities(
-      domain="states",
+      domain=states,
       block_attrs={"postal_code": "KS"}
     )
 
@@ -232,7 +234,7 @@ Pass a dictionary with the attribute you'd like to query with a fuzzy string.
 
 .. code-block:: python
 
-    entity = client.best_match({"name": "Kalifornia"}, domain="states")
+    entity = client.best_match({"name": "Kalifornia"}, domain=states)
 
     entity.name
     # California
@@ -395,7 +397,7 @@ Update a matched entity
     entity = client.update_match(
         {"name": "Missouri"},
         update_attrs={"capital": "Jefferson City"},
-        domain="states"
+        domain=states
     )
 
     entity.capital
@@ -404,7 +406,7 @@ Update a matched entity
     entity = client.update_match(
         {"name": "Texas", "postal_code": "TX"},
         update_attrs={"capital": "Austin"},
-        domain="states"
+        domain=states
     )
 
     entity.capital
@@ -457,7 +459,7 @@ Update a domain
 
 .. code-block:: python
 
-    domain = client.get_domain('states')
+    domain = client.get_domain('u-s-states')
 
     domain.update({"parent": "countries"})
 
@@ -467,7 +469,7 @@ Set a parent domain
 .. code-block:: python
 
     parent_domain = client.get_domain('countries')
-    domain = client.get_domain('states')
+    domain = client.get_domain('u-s-states')
 
     domain.set_parent(parent_domain)
 
@@ -476,7 +478,7 @@ Remove a parent domain
 
 .. code-block:: python
 
-    domain = client.get_domain('states')
+    domain = client.get_domain('u-s-states')
 
     domain.remove_parent()
 
@@ -489,7 +491,7 @@ Delete a domain
 
 .. code-block:: python
 
-    domain = client.get_domain('states')
+    domain = client.get_domain('u-s-states')
 
     domain.delete()
 

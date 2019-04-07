@@ -7,8 +7,8 @@ def import_class(val):
     See rest_framework/settings.py#L170-L182
     """
     try:
-        parts = val.split('.')
-        module_path, class_name = '.'.join(parts[:-1]), parts[-1]
+        parts = val.split(".")
+        module_path, class_name = ".".join(parts[:-1]), parts[-1]
         module = import_module(module_path)
         return getattr(module, class_name)
     except (ImportError, AttributeError) as e:

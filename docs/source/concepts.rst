@@ -99,3 +99,6 @@ In django-crosswalk, all scorer functions have the same signature. They must acc
   def your_custom_scorer(query_value, block_values):
       match, score = somefunc(query_value, block_values)
       return (match, score)
+
+
+Feel free to submit new scorers to this project!

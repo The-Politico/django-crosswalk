@@ -5,25 +5,23 @@ from uuslug import uuslug
 
 class Domain(models.Model):
     slug = models.SlugField(
-        blank=True, max_length=250, unique=True, editable=False)
+        blank=True, max_length=250, unique=True, editable=False
+    )
 
     name = models.CharField(max_length=250, unique=True)
 
     parent = models.ForeignKey(
-        'self',
+        "self",
         null=True,
         blank=True,
-        related_name='children',
-        on_delete=models.PROTECT
+        related_name="children",
+        on_delete=models.PROTECT,
     )
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
-        User,
-        related_name="+",
-        null=True,
-        on_delete=models.SET_NULL
+        User, related_name="+", null=True, on_delete=models.SET_NULL
     )
 
     def save(self, *args, **kwargs):
@@ -32,8 +30,8 @@ class Domain(models.Model):
                 self.name,
                 instance=self,
                 max_length=250,
-                separator='-',
-                start_no=2
+                separator="-",
+                start_no=2,
             )
         super(Domain, self).save(*args, **kwargs)
 

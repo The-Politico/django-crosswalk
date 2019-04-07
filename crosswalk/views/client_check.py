@@ -7,6 +7,5 @@ from crosswalk.authentication import AuthenticatedView
 class ClientCheck(AuthenticatedView):
     def get(self, request):
         return Response(
-            'Client configured correctly',
-            status=status.HTTP_200_OK
+            "Client configured correctly", status=status.HTTP_200_OK
         )
