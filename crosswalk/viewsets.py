@@ -31,7 +31,7 @@ class EntityDomainViewSet(AuthenticatedViewSet):
 
     def get_queryset(self):
         domain = self.kwargs["domain"]
-        return Entity.objects.filter(domain__name=domain)
+        return Entity.objects.filter(domain__slug=domain)
 
     def list(self, request, domain):
         """Allow passing block attr params to filter queryset."""
