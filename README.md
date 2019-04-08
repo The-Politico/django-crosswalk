@@ -38,3 +38,5 @@ Django-crosswalk will give your entities a canonical UUID you can use across dat
 Improve the precision of your queries by using the things you know about an entity. Create entities within a useful "domain" category so you don't confuse unrelated entities. Use whatever arbitrary attributes of an entity to create a custom blocking index. For example, you might use the state location and industry code to reduce the number of possible matches to a query based on a company's name.
 
 Create records of known aliases and use that data to create a training set for higher order deduplication algorithms.
+
+### [Read the docs](http://django-crosswalk.readthedocs.io/en/latest/)!
