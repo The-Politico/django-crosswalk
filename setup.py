@@ -6,7 +6,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name="django-crosswalk",
-    version="0.0.12",
+    version="0.0.13",
     packages=find_packages(exclude=("example",)),
     include_package_data=True,
     license="MIT",
@@ -26,11 +26,12 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     ],
     install_requires=[
-        "django",
+        "django>=2.2",
         "djangorestframework",
         "django-filter",
         "django-uuslug",
         "python-Levenshtein",
         "fuzzywuzzy",
     ],
+    python_requires=">=3.6",
 )

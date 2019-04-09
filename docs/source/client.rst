@@ -165,8 +165,15 @@ Client entity methods
 ---------------------
 
 
-Create some entities
-''''''''''''''''''''
+Create entities
+'''''''''''''''
+
+Create a single entity as a shallow dictionary.
+
+.. code-block:: python
+
+    entities = client.create({"name": "Kansas", "postal_code": "KS"}, domain=states)
+
 
 Create a list of shallow dictionaries for each entity you'd like to create. This method uses Django's :code:`bulk_create` method.
 

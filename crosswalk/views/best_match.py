@@ -39,6 +39,9 @@ class BestMatch(AuthenticatedView):
         entities = Entity.objects.filter(domain=domain)
         entities = entities.filter(attributes__contains=block_attrs)
 
+        if entities.count() == 0:
+            return Response({}, status=status.HTTP_200_OK)
+
         entity_values = [e.attributes[query_field] for e in entities]
 
         match, score = scorer(query_value, entity_values)

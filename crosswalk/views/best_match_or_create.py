@@ -43,17 +43,20 @@ class BestMatchOrCreate(AuthenticatedView):
         entities = Entity.objects.filter(domain=domain)
         entities = entities.filter(attributes__contains=block_attrs)
 
-        entity_values = [e.attributes[query_field] for e in entities]
-        match, score = scorer(query_value, entity_values)
+        if entities.count() == 0:
+            score = None
+            created = True
+        else:
+            entity_values = [e.attributes[query_field] for e in entities]
+            match, score = scorer(query_value, entity_values)
 
-        entity = entities.filter(
-            **{"attributes__{}".format(query_field): match}
-        ).first()
+            entity = entities.filter(
+                **{"attributes__{}".format(query_field): match}
+            ).first()
 
-        created = False
-        aliased = False
+            created = True if score < threshold else False
 
-        if score < threshold:
+        if created:
             created = True
             uuid = create_attrs.pop("uuid", None)
             entity = Entity(
@@ -68,6 +71,7 @@ class BestMatchOrCreate(AuthenticatedView):
             )
             entity.save()
 
+        aliased = False
         if return_canonical:
             while entity.alias_for:
                 aliased = True
