@@ -8,6 +8,7 @@ from crosswalk.validators import (
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.db.models import Q, F
 
 
 class Entity(models.Model):
@@ -61,3 +62,8 @@ class Entity(models.Model):
     class Meta:
         verbose_name_plural = "entities"
         unique_together = ("domain", "attributes")
+        constraints = [
+            models.CheckConstraint(
+                check=~Q(alias_for=F("uuid")), name="uuid_not_equal_alias"
+            )
+        ]
