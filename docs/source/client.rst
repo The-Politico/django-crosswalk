@@ -542,6 +542,22 @@ Delete a domain
     domain.deleted
     # True
 
+
+Get domain's entities
+'''''''''''''''''''''
+
+.. code-block:: python
+
+    domain = client.get_domain('u-s-states')
+
+    # Get all states
+    domain.get_entities()
+
+    # Filter entities using block attributes
+    entities = domain.get_entities({"postal_code": "KS"})
+    entities[0].name == "Kansas"
+
+
 ----------------------------
 
 Entity object methods
