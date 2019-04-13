@@ -563,6 +563,25 @@ Get domain's entities
 Entity object methods
 ---------------------
 
+Access an entity's attributes
+'''''''''''''''''''''''''''''
+
+.. code-block:: python
+
+    entity = client.match({"name": "Texas"})
+
+    # See what user-defined attributes are set
+    entity.attrs() == ["uuid", "name", "fips", "postal_code"]
+
+    # Access a specific attribute
+    entity.attrs("postal_code") == "TX"
+    entity.postal_code == "TX"
+
+    # Raise AttributeError if undefined
+    entity.attrs("undefined_attr")
+    entity.undefined_attr
+
+
 Update an entity
 ''''''''''''''''
 
