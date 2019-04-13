@@ -571,7 +571,7 @@ Access an entity's attributes
     entity = client.match({"name": "Texas"})
 
     # See what user-defined attributes are set
-    entity.attrs() == ["uuid", "name", "fips", "postal_code"]
+    entity.attrs() == ["fips", "name", "postal_code", "uuid"]
 
     # Access a specific attribute
     entity.attrs("postal_code") == "TX"
